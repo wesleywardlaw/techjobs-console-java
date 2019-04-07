@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LaunchCode
@@ -51,7 +52,7 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+        return deepCopy(allJobs);
     }
 
     /**
@@ -74,15 +75,54 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
             if (aValue.contains(value)) {
                 jobs.add(row);
             }
         }
 
-        return jobs;
+        return deepCopy(jobs);
     }
+
+    public static  ArrayList<HashMap<String,String>> deepCopy(ArrayList<HashMap<String,String>> jobs){
+        ArrayList<HashMap<String,String>> jobCopy = new ArrayList<>();
+        for(HashMap<String,String>job:jobs){
+            HashMap<String,String> hash = new HashMap<String,String>();
+            for (Map.Entry<String, String> entry : job.entrySet()) {
+
+                hash.put(entry.getKey(), entry.getValue());
+
+            }
+            jobCopy.add(hash);
+        }
+        return jobCopy;
+    }
+
+    public static ArrayList<HashMap<String, String>> findByValue(String value) {
+
+        // load data, if not already loaded
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (HashMap<String, String> row : allJobs) {
+            for (Map.Entry<String, String> entry : row.entrySet()) {
+
+                if(entry.getValue().toLowerCase().contains(value)){
+                    if(!jobs.contains(row)){
+                        jobs.add(row);
+                    }
+
+                }
+
+            }
+
+        }
+
+        return deepCopy(jobs);
+    }
+
 
     /**
      * Read in data from a CSV file and store it in a list
